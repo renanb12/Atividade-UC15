@@ -1,14 +1,20 @@
-import { StyleSheet, Text, View, Image } from "react-native";
+// src/screens/ProductDetails.tsx
 import React from "react";
-import { RouteProp, useRoute } from "@react-navigation/native";
-import { RootStackParamList } from "../types/types";
+import { StyleSheet, Text, View, Button, Image } from "react-native";
+import { useRoute } from "@react-navigation/native";
+import { useCartContext } from "../contexts/CartContext";
 import { ProductDTO } from "../types/Product";
 
-type ProductDetailsRouteProp = RouteProp<RootStackParamList, "ProductDetails">;
-
 const ProductDetails = () => {
-  const route = useRoute<ProductDetailsRouteProp>();
-  const { product } = route.params;
+  const route = useRoute();
+  const { product } = route.params as { product: ProductDTO };
+  const { addProduct } = useCartContext();
+
+  const handleAddToCart = () => {
+    addProduct(product);
+    // Opcional: exibir uma mensagem de confirmação
+    alert("Produto adicionado ao carrinho!");
+  };
 
   return (
     <View style={styles.container}>
@@ -16,6 +22,7 @@ const ProductDetails = () => {
       <Text style={styles.title}>{product.title}</Text>
       <Text style={styles.price}>${product.price}</Text>
       <Text style={styles.description}>{product.description}</Text>
+      <Button title="Adicionar ao Carrinho" onPress={handleAddToCart} />
     </View>
   );
 };
@@ -26,26 +33,24 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 16,
-    backgroundColor: "#fff",
   },
   image: {
     width: "100%",
     height: 300,
-    marginBottom: 16,
-    borderRadius: 8,
+    resizeMode: "contain",
   },
   title: {
     fontSize: 24,
     fontWeight: "bold",
-    marginBottom: 8,
+    marginTop: 16,
   },
   price: {
     fontSize: 20,
-    color: "#888",
-    marginBottom: 8,
+    color: "green",
+    marginVertical: 8,
   },
   description: {
     fontSize: 16,
-    color: "#333",
+    color: "gray",
   },
 });
