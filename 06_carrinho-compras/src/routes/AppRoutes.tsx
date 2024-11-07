@@ -15,7 +15,7 @@ const ProductRoutes = () => {
   return (
     <ProductStack.Navigator>
       <ProductStack.Screen
-        name="Product"
+        name="ProductList"
         component={ProductList}
         options={{
           headerRight: () => {
@@ -25,7 +25,7 @@ const ProductRoutes = () => {
         }}
       />
       <ProductStack.Screen
-        name="Details"
+        name="ProductDetails" // Certifique-se de que o nome é exatamente "ProductDetails"
         component={ProductDetails}
         options={{
           headerRight: () => {
