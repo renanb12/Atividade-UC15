@@ -1,11 +1,15 @@
-// ProductDetails.tsx
-
 import React, { useState } from "react";
-import { View, Text, Button, TextInput, StyleSheet, Image } from "react-native";
+import {
+  View,
+  Text,
+  Button,
+  StyleSheet,
+  Image,
+  TouchableOpacity,
+} from "react-native";
 import { ProductDTO } from "../types/Product";
 import { useCartContext } from "../contexts/CartContext";
 
-// Definindo o tipo para as props recebidas pelo componente
 type ProductDetailsProps = {
   route: {
     params: {
@@ -16,29 +20,46 @@ type ProductDetailsProps = {
 
 const ProductDetails = ({ route }: ProductDetailsProps) => {
   const { product } = route.params; // Produto vindo da navegação
-  const { addProduct } = useCartContext(); // Função do contexto para adicionar ao carrinho
-  const [quantity, setQuantity] = useState<string>("1"); // Tipando o estado como string
+  const { addProduct } = useCartContext(); // Adiciona no carrinho
+  const [quantity, setQuantity] = useState<number>(1); // Quantidade inicial como número
+
+  // Função para incrementar a quantidade
+  const increaseQuantity = () => setQuantity((prev) => prev + 1);
+
+  // Função para decrementar a quantidade
+  const decreaseQuantity = () =>
+    setQuantity((prev) => (prev > 1 ? prev - 1 : 1));
 
   // Função para adicionar o produto ao carrinho
   const handleAddToCart = () => {
-    const parsedQuantity = parseInt(quantity, 10);
-    if (parsedQuantity > 0 && !isNaN(parsedQuantity)) {
-      addProduct(product, parsedQuantity); // Chamada para adicionar o produto
-    }
+    addProduct(product, quantity); // Chamada para adicionar o produto
   };
 
   return (
     <View style={styles.container}>
       <Image source={{ uri: product.image }} style={styles.image} />
       <Text style={styles.title}>{product.title}</Text>
-      <Text style={styles.price}>${product.price}</Text>
-      <TextInput
-        style={styles.quantityInput}
-        keyboardType="numeric"
-        value={quantity}
-        onChangeText={setQuantity}
-        placeholder="Quantidade"
-      />
+      <Text style={styles.price}>${(product.price * quantity).toFixed(2)}</Text>
+
+      {/* Controles de quantidade */}
+      <View style={styles.quantityContainer}>
+        <TouchableOpacity
+          onPress={decreaseQuantity}
+          style={styles.quantityButton}
+        >
+          <Text style={styles.quantityButtonText}>-</Text>
+        </TouchableOpacity>
+
+        <Text style={styles.quantityText}>{quantity}</Text>
+
+        <TouchableOpacity
+          onPress={increaseQuantity}
+          style={styles.quantityButton}
+        >
+          <Text style={styles.quantityButtonText}>+</Text>
+        </TouchableOpacity>
+      </View>
+
       <Button title="Adicionar ao Carrinho" onPress={handleAddToCart} />
     </View>
   );
@@ -56,11 +77,26 @@ const styles = StyleSheet.create({
     marginBottom: 16,
     borderRadius: 8,
   },
-  quantityInput: {
+  quantityContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginVertical: 8,
+  },
+  quantityButton: {
     borderWidth: 1,
     borderColor: "#ccc",
     padding: 8,
-    marginVertical: 8,
-    width: 100,
+    width: 40,
+    alignItems: "center",
+    justifyContent: "center",
+    borderRadius: 5,
+  },
+  quantityButtonText: {
+    fontSize: 18,
+    fontWeight: "bold",
+  },
+  quantityText: {
+    fontSize: 18,
+    marginHorizontal: 16,
   },
 });
